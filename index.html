@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise ;)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌻</text></svg>">
+    <style>
+        @keyframes falling {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        .flower {
+            position: fixed;
+            font-size: 24px;
+            user-select: none;
+            animation: falling 5s linear infinite;
+            cursor: pointer;
+        }
+        .surprise-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+            opacity: 0;
+        }
+        .surprise-content.show {
+            max-height: 1000px;
+            opacity: 1;
+        }
+        @media (max-width: 640px) {
+            .flower {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-yellow-100 to-yellow-300 min-h-screen flex items-center justify-center overflow-x-hidden px-4">
+    <div class="text-center z-10 bg-white bg-opacity-80 p-4 sm:p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-yellow-600 mb-4 sm:mb-6">Feliz Día Preciosa, TQM Marthaaaa</h1>
+        <p class="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8">Para ti, flaquita preciosa 💛</p>
+        <button id="surpriseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-base">
+            Ver Sorpresa
+        </button>
+        <div id="surpriseContent1" class="surprise-content mt-4 sm:mt-6">
+            <p id="message1" class="text-lg sm:text-xl text-gray-800 mb-3 sm:mb-4">También toma una flor amarilla, cosita 🌼</p>
+            <img src="cs_image.jpg" alt="Imagen sorpresa 1" class="w-full h-auto rounded-lg shadow-md" />
+        </div>
+        <div id="surpriseContent2" class="surprise-content mt-4 sm:mt-6">
+            <p id="message2" class="text-lg sm:text-xl text-gray-800 mb-3 sm:mb-4">Estas guapota mmm ziiiii</p>
+            <img src="fl_flower_2.jpg" alt="Imagen sorpresa 2" class="w-full h-auto rounded-lg shadow-md" />
+        </div>
+        <div id="surpriseContent3" class="surprise-content mt-4 sm:mt-6">
+            <p id="message3" class="text-lg sm:text-xl text-gray-800 mb-3 sm:mb-4">¿Quieres ser la mandona de mi vida?</p>
+            <img src="fl_flower_3.jpg" alt="Imagen sorpresa 3" class="w-full h-auto rounded-lg shadow-md" />
+        </div>
+    </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="flower_mp3.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        const flowers = ['🌻', '🌼', '💐', '🏵️'];
+        let flowerInterval;
+        let currentSurprise = 0;
+        const totalSurprises = 3;
+        const music = document.getElementById('backgroundMusic');
+
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+            flower.classList.add('flower');
+            flower.style.left = `${Math.random() * 100}vw`;
+            flower.style.animationDuration = `${Math.random() * 2 + 3}s`;
+
+            // Make the flower draggable
+            flower.addEventListener('mousedown', startDrag);
+            flower.addEventListener('touchstart', startDrag);
+
+            document.body.appendChild(flower);
+
+            setTimeout(() => {
+                flower.remove();
+            }, 5000);
+        }
+
+        function startFlowerRain() {
+            if (!flowerInterval) {
+                flowerInterval = setInterval(createFlower, 300);
+            }
+        }
+
+        function stopFlowerRain() {
+            clearInterval(flowerInterval);
+            flowerInterval = null;
+        }
+
+        function showNextSurprise() {
+            for (let i = 1; i <= totalSurprises; i++) {
+                document.getElementById(`surpriseContent${i}`).classList.remove('show');
+            }
+            currentSurprise = (currentSurprise % totalSurprises) + 1;
+            document.getElementById(`surpriseContent${currentSurprise}`).classList.add('show');
+        }
+
+        function showMessage() {
+            const message = document.createElement('div');
+            message.textContent = '¡Feliz Día, Flaquita! 💖';
+            message.classList.add('fixed', 'top-4', 'left-4', 'bg-white', 'p-4', 'rounded-lg', 'shadow-lg', 'text-xl', 'text-center', 'z-50');
+            document.body.appendChild(message);
+            setTimeout(() => {
+                message.remove();
+            }, 3000);
+        }        
+
+        function startDrag(e) {
+            e.preventDefault();
+            const flower = e.target;
+            const offsetX = e.clientX - flower.getBoundingClientRect().left;
+            const offsetY = e.clientY - flower.getBoundingClientRect().top;
+
+            function onMouseMove(e) {
+                flower.style.left = `${e.clientX - offsetX}px`;
+                flower.style.top = `${e.clientY - offsetY}px`;
+                flower.style.position = 'absolute';
+            }
+
+            function onMouseUp(e) {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                showMessage(); // Show message when flower is moved
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        document.getElementById('surpriseBtn').addEventListener('click', function() {
+            if (currentSurprise === 0) {
+                music.play().catch(e => console.log("Audio playback failed:", e));
+                startFlowerRain();
+            }
+            showNextSurprise();
+            
+            if (currentSurprise === totalSurprises) {
+                this.textContent = 'Reiniciar Sorpresa ;)';
+            } else {
+                this.textContent = 'Siguiente Sorpresa';
+            }
+        });
+
+        music.addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play().catch(e => console.log("Audio loop failed:", e));
+        }, false);
+    </script>
+</body>
+</html>
